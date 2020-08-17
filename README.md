@@ -6,7 +6,7 @@ Simple mlflow server
 # Build
 
 ```bash
-docker build -t mlrepa/mlflow-server .
+docker build -t mlrepa/mlflow-server:dev .
 ```
 
 
@@ -17,20 +17,25 @@ docker network create mlflow-server
 
 # Run
 
+Example:
+
 ```bash
-# <MLFLOW_WS> - your mlflow workspace folder on disk
-export MLFLOW_WS=<MLFLOW_WS>
+export PORT=1234
+export BACKEND_STORE=postgresql+psycopg2://postgres:postgres@postgres:5432/postgres
+export ARTIFACT_ROOT=$PWD/mlflow_ws
 
 # up server
 docker run \
         --name=mlflow-server \
-        -p 1234:1234 \
-        --expose 1234 \
+        -p $PORT:$PORT \
+        --expose $PORT \
         --network=mlflow-server \
         --rm \
-        -e MLFLOW_WS=$MLFLOW_WS \
-        -v $MLFLOW_WS:$MLFLOW_WS \
-        mlrepa/mlflow-server
+        -e PORT=$PORT \
+        -e BACKEND_STORE=$BACKEND_STORE \
+        -e ARTIFACT_ROOT=$ARTIFACT_ROOT \
+        [-v $ARTIFACT_ROOT:$ARTIFACT_ROOT] \  # if ARTIFACT_ROOT is local folder
+        mlrepa/mlflow-server:dev
 ```
 
 
@@ -61,7 +66,7 @@ run you docker application:
 ```bash
 docker run \
         --name=<your_container> \
-        -v $MLFLOW_WS:$MLFLOW_WS \
+        -v $ARTIFACT_ROOT:$ARTIFACT_ROOT \
         --network=mlflow-server <your_image>
 ```
 
