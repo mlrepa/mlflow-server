@@ -1,9 +1,10 @@
-FROM python:3.7-slim
+FROM python:3.8-slim
 
 RUN apt-get update && \
     apt-get install -y gcc curl build-essential
 
-RUN pip install mlflow==1.10.0 psycopg2-binary==2.8.5
+COPY ./requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache -r /tmp/requirements.txt
 
 ENV HOME_DIR="/home"
 WORKDIR ${HOME_DIR}
